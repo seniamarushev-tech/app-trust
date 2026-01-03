@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Machinization of Music</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- TON Connect SDK -->
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <header class="header">
+    <h1>Machinization of Music</h1>
+    <p>Access your favorite tracks like a machine</p>
+  </header>
+
+  <button id="connectWalletBtn">🔌 Connect TON Wallet</button>
+  <p id="walletStatus">Wallet not connected</p>
+
+  <hr>
+
+  <h2>🎵 Track Showcase</h2>
+  <div class="grid" id="market"></div>
+
+  <hr>
+
+  <h2>➕ Add Track</h2>
+  <input id="title" placeholder="Track Title">
+  <input id="price" placeholder="Price (TON)">
+  <input type="file" id="cover" accept="image/*">
+  <input type="file" id="audio" accept="audio/*">
+  <button id="addTrackBtn">Add Track</button>
+
+  <audio id="player" controls class="hidden"></audio>
+
+  <footer class="footer">
+    © 2026 Machinization of Music. Anti-Streaming. Exclusive Access.
+  </footer>
+
+</div>
+
+<script>
+/* ---------- TON Connect ---------- */
+let walletConnected = false;
+let userWallet = null;
+
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: 'https://raw.githubusercontent.com/ton-connect/demo-dapp/main/tonconnect-manifest.json',
+  buttonRootId: 'connectWalletBtn'
+});
+
+tonConnectUI.onStatusChange(wallet => {
+  if (wallet) {
+    walletConnected = true;
+    userWallet = wallet.account.address;
+    document.getElementById("walletStatus").innerText = "Connected: " + userWallet;
+  } else {
+    walletConnected = false;
+    userWallet = null;
+    document.getElementById("walletStatus").innerText = "Wallet not connected";
+  }
+});
+
+/* ---------- Storage ---------- */
+let tracks = JSON.parse(localStorage.getItem("tracks") || "[]");
+let access = JSON.parse(localStorage.getItem("access") || "{}");
+
+/* ---------- Add Track ---------- */
+document.getElementById("addTrackBtn").addEventListener("click", () => {
+  const title = document.getElementById("title").value;
+  const price = document.getElementById("price").value;
+  const coverFile = document.getElementById("cover").files[0];
+  const audioFile = document.getElementById("audio").files[0];
+
+  if(!title || !price || !coverFile || !audioFile){
+    alert("Fill all fields!");
+    return;
+  }
+
+  const readerCover = new FileReader();
+  const readerAudio = new FileReader();
+
+  readerCover.onload = () => {
+    readerAudio.onload = () => {
+      tracks.push({
+        id: Date.now(),
+        title,
+        price,
+        cover: readerCover.result,
+        audio: readerAudio.result
+      });
+      save();
+      render();
+    };
+    readerAudio.readAsDataURL(audioFile);
+  };
+  readerCover.readAsDataURL(coverFile);
+});
+
+/* ---------- Buy & Play ---------- */
+function buy(id){
+  if(!walletConnected){
+    alert("Connect TON Wallet first!");
+    return;
+  }
+  access[id] = {
+    wallet: userWallet,
+    time: Date.now()
+  };
+  save();
+  render();
+}
+
+function play(id){
+  const track = tracks.find(t=>t.id===id);
+  const player = document.getElementById("player");
+  player.src = track.audio;
+  player.classList.remove("hidden");
+  player.play();
+}
+
+/* ---------- Render ---------- */
+function render(){
+  const market = document.getElementById("market");
+  market.innerHTML = "";
+
+  tracks.forEach(t=>{
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <img src="${t.cover}" alt="Cover">
+      <h3 class="track-title">${t.title}</h3>
+      <p class="track-price">${t.price} TON</p>
+      ${
+        access[t.id] && access[t.id].wallet === userWallet
+        ? `<button onclick="play(${t.id})">▶ Play</button>`
+        : `<button onclick="buy(${t.id})">🔑 Unlock</button>`
+      }
+    `;
+    market.appendChild(div);
+  });
+}
+
+function save(){
+  localStorage.setItem("tracks",JSON.stringify(tracks));
+  localStorage.setItem("access",JSON.stringify(access));
+}
+
+/* ---------- Initial render ---------- */
+render();
+</script>
+
+</body>
+</html>
