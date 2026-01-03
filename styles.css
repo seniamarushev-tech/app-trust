@@ -1,0 +1,115 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #0b0b0b;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+}
+
+header.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+header.header h1 {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+header.header p {
+  font-size: 1.2rem;
+  opacity: 0.7;
+  margin-top: 10px;
+}
+
+/* Buttons */
+button {
+  background:#1f1f1f;
+  color:#00ffff;
+  border:1px solid #00ffff;
+  padding:10px;
+  cursor:pointer;
+  border-radius:5px;
+  margin-top:5px;
+  transition:0.2s;
+}
+
+button:hover {
+  background:#00ffff33;
+}
+
+/* Input */
+input {
+  background:#111;
+  border:1px solid #333;
+  color:#fff;
+  padding:8px;
+  width:100%;
+  margin-bottom:10px;
+}
+
+/* Main content grid */
+.main-content, .grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+
+.card {
+  background-color: #111;
+  border:1px solid #222;
+  padding:15px;
+  border-radius:10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow:0 5px 15px rgba(0,255,255,0.1);
+}
+
+.card img {
+  width:100%;
+  height:200px;
+  object-fit:cover;
+  border-radius:8px;
+  margin-bottom:10px;
+}
+
+.track-title {
+  font-size:1.5rem;
+  margin-bottom:5px;
+}
+
+.track-price {
+  font-size:1rem;
+  opacity:0.7;
+  margin-bottom:10px;
+}
+
+/* Hidden audio player */
+audio.hidden {
+  display:none;
+}
+
+/* Footer */
+.footer {
+  text-align:center;
+  margin-top:50px;
+  opacity:0.4;
+  font-size:12px;
+}
